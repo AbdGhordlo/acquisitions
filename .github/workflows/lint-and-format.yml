@@ -1,0 +1,50 @@
+name: Lint and Format
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main, staging]
+
+jobs:
+  lint-and-format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        id: lint
+        continue-on-error: true
+        run: |
+          npm run lint
+          echo "status=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Run Prettier check
+        id: prettier
+        continue-on-error: true
+        run: |
+          npm run format:check
+          echo "status=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Report lint and format findings
+        if: always()
+        run: |
+          if [ "${{ steps.lint.outputs.status }}" != "0" ] || [ "${{ steps.prettier.outputs.status }}" != "0" ]; then
+            echo "## Lint and format issues detected"
+            echo "Please fix issues with:"
+            echo "  npm run lint:fix"
+            echo "  npm run format"
+            exit 1
+          fi

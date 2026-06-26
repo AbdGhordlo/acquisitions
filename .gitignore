@@ -5,3 +5,6 @@ node_modules
 # Ignore log files
 *.log
 .neon_local/
+
+# Test coverage
+coverage/
