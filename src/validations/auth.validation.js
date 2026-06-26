@@ -11,4 +11,3 @@ export const signinSchema = z.object({
   email: z.string().email().toLowerCase().trim(),
   password: z.string().min(1),
 });
-
