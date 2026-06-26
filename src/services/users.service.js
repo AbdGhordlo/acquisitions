@@ -2,7 +2,6 @@ import { db } from '#config/database.js';
 import logger from '#config/logger.js';
 import { users } from '#models/user.model.js';
 import { eq } from 'drizzle-orm';
-import { email } from 'zod';
 
 export const getAllUsers = async () => {
   try {
@@ -66,7 +65,7 @@ export const updateUser = async (id, updates) => {
       }
     }
 
-    const [updateedUser] = await db
+    const [updatedUser] = await db
       .update(users)
       .set({
         ...updates,
@@ -82,10 +81,10 @@ export const updateUser = async (id, updates) => {
         updated_at: users.updated_at,
       });
 
-    logger.info(`User ${updateUser.email} updated successfully`);
-    return updateUser;
+    logger.info(`User ${updatedUser.email} updated successfully`);
+    return updatedUser;
   } catch (e) {
-    logger(`Error updating user ${id}: `, e);
+    logger.error(`Error updating user ${id}: `, e);
     throw e;
   }
 };
